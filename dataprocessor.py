@@ -1,7 +1,7 @@
 import csv
 
-input_file = "2011_Regions.csv"
-output_file = "NEW_2011_Regions.csv"
+input_file = "2011_Constituencies.csv"
+output_file = "NEW_2011_Constituencies.csv"
 output_fields = [
     "date",
     "geography",
@@ -40,12 +40,56 @@ def readData21(input_file: str) -> list[any]:
         fields = next(csvreader)
 
         result = []
+        chunk = []
+        i=0
         for row in csvreader:
-            result += [row]
+            chunk += [row]
+            if i==19:
+                result += [chunk]
+                i=-1
+                chunk = []
+            i += 1
     return result
 
 def modifyData21(preprocessed: list[any]) -> list[any]:
     new_data = []
+    for chunk in preprocessed:
+        temp = [""]*len(output_fields)
+        temp[0] = "2021"
+        temp[1] = chunk[0][1]
+        temp[2] = chunk[0][0]
+        #All
+        temp[3] = str(sum(map(lambda x: int(x[4]), chunk)))
+        # White
+        temp[4] = str(sum(map(lambda x: int(x[4]), chunk[13:18])))
+        temp[5] = chunk[13][4]
+        temp[6] = chunk[14][4]
+        temp[7] = chunk[15][4]
+        temp[8] = chunk[16][4]
+        temp[9] = chunk[17][4]
+        # Mixed
+        temp[10] = str(sum(map(lambda x: int(x[4]), chunk[9:13])))
+        temp[11] = chunk[11][4]
+        temp[12] = chunk[10][4]
+        temp[13] = chunk[9][4]
+        temp[14] = chunk[12][4]
+        # Asian
+        temp[15] = str(sum(map(lambda x: int(x[4]), chunk[1:6])))
+        temp[16] = chunk[3][4]
+        temp[17] = chunk[4][4]
+        temp[18] = chunk[1][4]
+        temp[19] = chunk[2][4]
+        temp[20] = chunk[5][4]
+        # Black
+        temp[21] = str(sum(map(lambda x: int(x[4]), chunk[6:9])))
+        temp[22] = chunk[6][4]
+        temp[23] = chunk[7][4]
+        temp[24] = chunk[8][4]
+        # Other
+        temp[25] = str(sum(map(lambda x: int(x[4]), chunk[18:20])))
+        temp[26] = chunk[18][4]
+        temp[27] = chunk[19][4]
+        new_data += [temp]
     return new_data
 
 
@@ -55,3 +99,37 @@ def writeData21(converted_list: list[any], output_file):
         csvwriter.writerow(output_fields)
         csvwriter.writerows(converted_list)
     return
+
+def readData11(input_file: str) -> list[any]:
+    with open(input_file, "r") as file:
+        csvreader = csv.reader(file)
+
+        fields = next(csvreader)
+
+        result = []
+        for row in csvreader:
+            result += [row]
+    return result
+
+def modifyData11(preprocessed: list[any]) -> list[any]:
+    new_data = []
+    for row in preprocessed:
+        temp = [""]*len(output_fields)
+        temp[0:3] = row[0:3]
+        temp[3:7] = row[4:8]
+        temp[7] = "0"
+        temp[8:28] = row[8:28]
+        new_data += [temp]
+    return new_data
+
+
+def writeData11(converted_list: list[any], output_file):
+    with open(output_file, 'w', newline='') as file:
+        csvwriter = csv.writer(file)
+        csvwriter.writerow(output_fields)
+        csvwriter.writerows(converted_list)
+    return
+
+imported_data = readData11(input_file)
+processed = modifyData11(imported_data)
+writeData11(processed, output_file)
