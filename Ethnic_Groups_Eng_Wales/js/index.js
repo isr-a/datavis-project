@@ -22,12 +22,12 @@ let regionCodes = [
 
 // Helper Functions
 function isInteger(value) {
-    return /^\d+$/.test(value);
+    return /^\-?[0-9]+(e[0-9]+)?(\.[0-9]+)?$/.test(value);
   }
 
-function toIntOptional(x) {
+function toFloatOptional(x) {
     if (isInteger(x)) {
-        return parseInt(x)
+        return parseFloat(x)
     } else {
         return x
     }
@@ -70,7 +70,7 @@ d3.csv('./data/Merged_Ethnic_Data_Percent.csv')
     data = loadedData;
 
     data.forEach(d => {
-        Object.keys(d).forEach(function(key){d[key] = toIntOptional(d[key])});
+        Object.keys(d).forEach(function(key){d[key] = toFloatOptional(d[key])});
     });
 
     console.log(data);
