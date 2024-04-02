@@ -133,6 +133,40 @@ def modifyDataAddTotal(preprocessed: list[any]) -> list[any]:
     new_data.insert(0, temp)
     return new_data
 
-imported_data = readData11(input_file)
-processed = modifyDataAddTotal(imported_data)
-writeData(processed, output_file)
+def mergeAllData():
+    all_data = []
+    with open("NEW_2011_Regions_W_Total.csv", "r") as file1:
+        csvreader = csv.reader(file1)
+        next(csvreader)
+
+        for row in csvreader:
+            all_data += [row]
+    with open("NEW_2011_Constituencies.csv", "r") as file1:
+        csvreader = csv.reader(file1)
+        next(csvreader)
+
+        for row in csvreader:
+            all_data += [row]
+    with open("NEW_2021_Regions_W_Total.csv", "r") as file1:
+        csvreader = csv.reader(file1)
+        next(csvreader)
+
+        for row in csvreader:
+            all_data += [row]
+    with open("NEW_2021_Constituencies.csv", "r") as file1:
+        csvreader = csv.reader(file1)
+        next(csvreader)
+
+        for row in csvreader:
+            all_data += [row]
+    with open("Merged_Ethnic_Data.csv", 'w', newline='') as file:
+        csvwriter = csv.writer(file)
+        csvwriter.writerow(output_fields)
+        csvwriter.writerows(all_data)
+    return
+
+#imported_data = readData11(input_file)
+#processed = modifyDataAddTotal(imported_data)
+#writeData(processed, output_file)
+
+mergeAllData()
