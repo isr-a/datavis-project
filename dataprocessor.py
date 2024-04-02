@@ -1,7 +1,7 @@
 import csv
 
-input_file = "2011_Constituencies.csv"
-output_file = "NEW_2011_Constituencies.csv"
+input_file = "NEW_2011_Regions.csv"
+output_file = "NEW_2011_Regions_W_Total.csv"
 output_fields = [
     "date",
     "geography",
@@ -93,7 +93,7 @@ def modifyData21(preprocessed: list[any]) -> list[any]:
     return new_data
 
 
-def writeData21(converted_list: list[any], output_file):
+def writeData(converted_list: list[any], output_file):
     with open(output_file, 'w', newline='') as file:
         csvwriter = csv.writer(file)
         csvwriter.writerow(output_fields)
@@ -122,14 +122,17 @@ def modifyData11(preprocessed: list[any]) -> list[any]:
         new_data += [temp]
     return new_data
 
-
-def writeData11(converted_list: list[any], output_file):
-    with open(output_file, 'w', newline='') as file:
-        csvwriter = csv.writer(file)
-        csvwriter.writerow(output_fields)
-        csvwriter.writerows(converted_list)
-    return
+def modifyDataAddTotal(preprocessed: list[any]) -> list[any]:
+    new_data = preprocessed
+    temp = [""]*len(output_fields)
+    temp[0] = new_data[0][0]
+    temp[1] = "England and Wales"
+    temp[2] = "N/A"
+    formatted = list(map(lambda x: list(map(int, x)), map(lambda x: x[3:28], new_data)))
+    temp[3:28] = [sum(i) for i in zip(*formatted)]
+    new_data.insert(0, temp)
+    return new_data
 
 imported_data = readData11(input_file)
-processed = modifyData11(imported_data)
-writeData11(processed, output_file)
+processed = modifyDataAddTotal(imported_data)
+writeData(processed, output_file)
