@@ -8,3 +8,19 @@ body {
 h1 {
     margin-top: 0;
 }
+
+.map {
+    border-style: solid;
+    border-width: 5px;
+    border-color: black;
+}
+
+svg {
+    border-style: solid;
+    border-width: 5px;
+    border-color: red;
+}
+  
+  .country:hover {
+    fill: red;
+  }
