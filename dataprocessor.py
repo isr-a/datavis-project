@@ -165,8 +165,32 @@ def mergeAllData():
         csvwriter.writerows(all_data)
     return
 
+def getPercentNonWhite(output_fields):
+    output_fields += ["Percent Non-WB"]
+    all_data = []
+    with open("Merged_Ethnic_Data.csv", "r") as file1:
+        csvreader = csv.reader(file1)
+        next(csvreader)
+
+        for row in csvreader:
+            all_data += [row]
+    new_data = []
+    for row in all_data:
+        temp = row
+        decimal_points = 2
+        percent = (1 - float(temp[5])/float(temp[3]))*100
+        percent_str = "{:.{}f}%".format(percent, decimal_points)
+        temp += [percent_str]
+        new_data += [temp]
+    with open("Merged_Ethnic_Data_Percent.csv", 'w', newline='') as file:
+        csvwriter = csv.writer(file)
+        csvwriter.writerow(output_fields)
+        csvwriter.writerows(all_data)
+    return
+
+getPercentNonWhite(output_fields)
 #imported_data = readData11(input_file)
 #processed = modifyDataAddTotal(imported_data)
 #writeData(processed, output_file)
 
-mergeAllData()
+#mergeAllData()
