@@ -5,7 +5,7 @@ const svg = d3.select('svg');
 // Global/state variables
 let data;
 let mapFile;
-let mapOptions = ['./maps/ew_eer.geojson', './maps/ew_wpc.geojson']
+let mapType = "Region"
 let regionCodes = [
     'E12000001',
     'E12000002',
@@ -33,6 +33,9 @@ function toFloatOptional(x) {
     }
 }
 
+// Interactivity Functions
+const setMapType = (event, d) => {}
+
 function mapDataFilter(display_type, year, data) {
     let temp;
     if (display_type == "Region") {
@@ -52,7 +55,7 @@ function mapDataFilter(display_type, year, data) {
 const updateVis = () => {
     // Refresh Map
     svg.call(map, {
-        data: mapDataFilter("Constituency", 2021, data),
+        data: mapDataFilter(mapType, 2021, data),
         margin: { top: 0, bottom: 0, left: 0, right: 575 },
         chosen_map: mapFile,
     });
