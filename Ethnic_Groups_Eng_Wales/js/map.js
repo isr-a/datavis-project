@@ -66,7 +66,9 @@ export const map = (parent, props) => {
                 .enter().append('path')
                     .attr('class','country')
                     .attr('d', pathGenerator)
-                    .attr('fill', d => nonWBScale(data.filter(x => x['geography code'] == d.properties.EER13CD)[0]['Percent Non-WB']))
+                    .attr('fill', d => nonWBScale(data.filter(x => x['geography code'] == d.properties.gcode)[0]['Percent Non-WB']))
+                    .attr('stroke', 'black')
+                    .attr('stroke-width', '0.1px')
             mapShape.exit().remove();
         });
 };
