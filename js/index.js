@@ -52,15 +52,15 @@ function mapDataFilter(display_type, year, data) {
 const updateVis = () => {
     // Refresh Map
     svg.call(map, {
-        data: mapDataFilter("Region", 2021, data),
-        margin: { top: 40, bottom: 50, left: 30, right: 380 },
+        data: mapDataFilter("Constituency", 2021, data),
+        margin: { top: 0, bottom: 0, left: 0, right: 575 },
         chosen_map: mapFile,
     });
 
     // Refresh Sunburst
     svg.call(sunburst, {
         data: data,
-        margin: { top: 40, bottom: 50, left: 30, right: 380 },
+        margin: { top: 40, bottom: 50, left: 700, right: 30 },
     });
 };
 
