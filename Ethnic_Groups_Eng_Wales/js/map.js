@@ -7,9 +7,6 @@ export const map = (parent, props) => {
         setSelectedArea
     } = props;
 
-    console.log(selectedArea)
-    console.log("-------")
-
     const width = +parent.attr('width');
     const height = +parent.attr('height');
     const innerWidth = width - margin.left - margin.right;
