@@ -8,4 +8,6 @@ export const sunburst = (parent, props) => {
     const height = +parent.attr('height');
     const innerWidth = width - margin.left - margin.right;
     const innerHeight = height - margin.top - margin.bottom;
+
+    console.log(data)
 };
