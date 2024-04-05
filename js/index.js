@@ -54,8 +54,6 @@ const setMapType = (event, d) => {}
 
 const setSelectedArea = (event, d) => {
     selectedArea = d
-    console.log(selectedArea)
-    console.log("---------------------")
     updateVis()
 }
 
