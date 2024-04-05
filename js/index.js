@@ -53,6 +53,15 @@ function mapDataFilter(mapType, year, data) {
     return temp.filter(d => (d.date == year))
 }
 
+function sunburstDataFilter(data) {
+    console.log(selectedArea)
+    if (selectedArea.properties.gcode == "UnsetArea") {
+        return data.filter(d => (d.geography == "England and Wales"))
+    } else {
+        return data.filter(d => (d['geography code'] == selectedArea.properties.gcode))
+    }
+}
+
 // Interactivity Functions
 function setSelectedMap() {
     var selectedOption = d3.select(this).property("value")
@@ -89,7 +98,7 @@ const updateVis = () => {
 
     // Refresh Sunburst
     svg.call(sunburst, {
-        data: data,
+        data: sunburstDataFilter(data),
         margin: { top: 40, bottom: 50, left: 700, right: 30 },
     });
 };
