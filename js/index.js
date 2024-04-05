@@ -90,7 +90,7 @@ const updateVis = () => {
     // Refresh Map
     svg.call(map, {
         data: mapDataFilter(mapType, mapYear, data),
-        margin: { top: 0, bottom: 0, left: 0, right: 575 },
+        margin: { top: 0, bottom: 0, left: 0, right: 675 },
         chosen_map: mapFile,
         selectedArea: selectedArea,
         setSelectedArea: setSelectedArea,
