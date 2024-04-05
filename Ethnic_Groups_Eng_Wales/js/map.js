@@ -96,7 +96,7 @@ export const map = (parent, props) => {
             const mapLegendEnter = mapLegend
                 .enter().append('g')
                     .attr('class', 'mapLegend')
-                    .attr("transform", `translate(${margin.right-280},${margin.bottom+560})`)
+                    .attr("transform", `translate(${margin.right-380},${margin.bottom+560})`)
             mapLegendEnter.append('rect')
                 .attr("transform", `translate(-300,-10)`)
                 .attr('width', innerWidth+10)
