@@ -20,6 +20,9 @@ let regionCodes = [
     'W92000004',
 ];
 
+// HTML Elements
+var mapSelector = d3.select("#mapSelectDropdown").on("input", setSelectedMap )
+
 
 // Helper Functions
 function isInteger(value) {
@@ -34,12 +37,12 @@ function toFloatOptional(x) {
     }
 }
 
-function mapDataFilter(display_type, year, data) {
+function mapDataFilter(mapType, year, data) {
     let temp;
-    if (display_type == "Region") {
+    if (mapType == "Region") {
         mapFile = './maps/ew_eer.geojson'
         temp = data.filter(d => (regionCodes.includes(d['geography code'])))
-    } else if (display_type == "Constituency") {
+    } else if (mapType == "Constituency") {
         mapFile = './maps/ew_wpc.geojson'
         temp = data.filter(d => (!regionCodes.includes(d['geography code'])))
     } else {
@@ -50,7 +53,11 @@ function mapDataFilter(display_type, year, data) {
 }
 
 // Interactivity Functions
-const setMapType = (event, d) => {}
+function setSelectedMap() {
+    var selectedOption = d3.select(this).property("value")
+    mapType = selectedOption
+    updateVis()
+}
 
 const setSelectedArea = (event, d) => {
     selectedArea = d
