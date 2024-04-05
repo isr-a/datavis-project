@@ -20,6 +20,6 @@ svg {
 }
   
 .country:hover {
-    stroke-width: 0.5px;
+    stroke-width: 1px;
     stroke: black;
   }

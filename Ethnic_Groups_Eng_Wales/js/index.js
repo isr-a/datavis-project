@@ -4,8 +4,9 @@ const svg = d3.select('svg');
 
 // Global/state variables
 let data;
-let mapFile;
-let mapType = "Region"
+let mapFile= './maps/ew_eer.geojson';
+let selectedArea = {properties: {gcode: "UnsetArea"}};
+let mapType = "Region";
 let regionCodes = [
     'E12000001',
     'E12000002',
@@ -17,13 +18,13 @@ let regionCodes = [
     'E12000008',
     'E12000009',
     'W92000004',
-]
+];
 
 
 // Helper Functions
 function isInteger(value) {
     return /^\-?[0-9]+(e[0-9]+)?(\.[0-9]+)?$/.test(value);
-  }
+}
 
 function toFloatOptional(x) {
     if (isInteger(x)) {
@@ -32,9 +33,6 @@ function toFloatOptional(x) {
         return x
     }
 }
-
-// Interactivity Functions
-const setMapType = (event, d) => {}
 
 function mapDataFilter(display_type, year, data) {
     let temp;
@@ -51,6 +49,16 @@ function mapDataFilter(display_type, year, data) {
     return temp.filter(d => (d.date == year))
 }
 
+// Interactivity Functions
+const setMapType = (event, d) => {}
+
+const setSelectedArea = (event, d) => {
+    selectedArea = d
+    console.log(selectedArea)
+    console.log("---------------------")
+    updateVis()
+}
+
 // Refreshes Visualisation
 const updateVis = () => {
     // Refresh Map
@@ -58,6 +66,8 @@ const updateVis = () => {
         data: mapDataFilter(mapType, 2021, data),
         margin: { top: 0, bottom: 0, left: 0, right: 575 },
         chosen_map: mapFile,
+        selectedArea: selectedArea,
+        setSelectedArea: setSelectedArea,
     });
 
     // Refresh Sunburst
@@ -75,8 +85,6 @@ d3.csv('./data/Merged_Ethnic_Data_Percent.csv')
     data.forEach(d => {
         Object.keys(d).forEach(function(key){d[key] = toFloatOptional(d[key])});
     });
-
-    console.log(data);
 
     updateVis();
     });

@@ -3,20 +3,17 @@ export const map = (parent, props) => {
         data,
         margin,
         chosen_map,
+        selectedArea,
+        setSelectedArea
     } = props;
+
+    console.log(selectedArea)
+    console.log("-------")
 
     const width = +parent.attr('width');
     const height = +parent.attr('height');
     const innerWidth = width - margin.left - margin.right;
     const innerHeight = height - margin.top - margin.bottom;
-
-    // Box defined by margins
-    parent.append('rect')
-        .attr('x', margin.left)
-        .attr('y', margin.top)
-        .attr('width', innerWidth)
-        .attr('height', innerHeight)
-        .attr('fill', '#69a3b2');
 
     // Define Projection Constants
     const projection = d3.geoNaturalEarth1()
@@ -33,18 +30,20 @@ export const map = (parent, props) => {
         .attr("height", innerHeight)
         .attr("style", "max-width: 100%; height: auto;")
         .attr('class', 'map');
-    const mapchild = mapEnter.selectAll('.mapchild').data([null])
+
+    // Bounding Box defined by margins
+    mapEnter.append('rect')
+        .attr('x', margin.left)
+        .attr('y', margin.top)
+        .attr('width', innerWidth)
+        .attr('height', innerHeight)
+        .attr('fill', '#69a3b2');
+
+    const mapchild = mapEnter.merge(map).selectAll('.mapchild').data([null])
     const mapchildEnter = mapchild
         .enter().append('g')
         .attr('transform', `translate(${margin.left-150},${margin.top})`)
             .attr('class', 'mapchild');
-            
-
-    console.log([d3.min(data.map(d => d['Percent Non-WB'])), d3.max(data.map(d => d['Percent Non-WB']))])
-
-//    mapchildEnter.append('path')
-//        .attr('class', 'sphere')
-//        .attr('d', pathGenerator({type: 'Sphere'}));
 
     // Initialise scales
     const nonWBScale = d3.scaleLinear()
@@ -58,17 +57,28 @@ export const map = (parent, props) => {
         .translateExtent([[0, 0], [width, height]])
         .on('zoom', event => mapchildEnter.attr('transform', event.transform)));
 
+    function test(event, d) {
+        console.log("CALLING SETSELECTEDAREA")
+        setSelectedArea(event, d);
+        console.log("FINISHED CALLING SETSELECTEDAREA")
+        console.log(d)
+        console.log(selectedArea)
+        console.log((selectedArea==d));
+    }
+
     // Below contains all code that relies on the map data in some way
     d3.json(chosen_map)
         .then(mapdata => {
-            const mapShape = mapchildEnter.selectAll('path').data(mapdata.features)
+            const mapShape = mapchildEnter.merge(mapchild).selectAll('.country').data(mapdata.features)
             const mapShapeEnter = mapShape
                 .enter().append('path')
-                    .attr('class','country')
-                    .attr('d', pathGenerator)
-                    .attr('fill', d => nonWBScale(data.filter(x => x['geography code'] == d.properties.gcode)[0]['Percent Non-WB']))
                     .attr('stroke', 'black')
-                    .attr('stroke-width', '0.1px')
+                    .attr('class','country')
+            mapShapeEnter.merge(mapShape)
+                .attr('d', pathGenerator)
+                .attr('fill', d => nonWBScale(data.filter(x => x['geography code'] == d.properties.gcode)[0]['Percent Non-WB']))
+                .attr('stroke-width', d => (selectedArea.properties.gcode==d.properties.gcode) ? '1px' : '0.1px')
+                .on('click', setSelectedArea);
             mapShape.exit().remove();
         });
 };
