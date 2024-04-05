@@ -44,8 +44,14 @@ export const map = (parent, props) => {
 
     // Initialise scales
     const nonWBScale = d3.scaleLinear()
-        .domain([0, d3.max(data.map(d => d['Percent Non-WB']))])
+        .domain([0, 90])
         .range(["white","green"])
+        
+    var legendLinear = d3.legendColor()
+        .shapeWidth(30)
+        .cells(10)
+        .orient('horizontal')
+        .scale(nonWBScale);
 
     // d3-zoom 
     mapEnter.call(d3.zoom()
@@ -57,6 +63,7 @@ export const map = (parent, props) => {
     // Below contains all code that relies on the map data in some way
     d3.json(chosen_map)
         .then(mapdata => {
+
             const mapShape = mapchildEnter.merge(mapchild).selectAll('.country').data(mapdata.features)
             const mapShapeEnter = mapShape
                 .enter().append('path')
@@ -84,5 +91,21 @@ export const map = (parent, props) => {
                 .attr('dx', '100')
                 .attr('dy', '35')
                 .text("Select map type:")
+
+            const mapLegend = mapEnter.merge(map).selectAll('.mapLegend').data([null])
+            const mapLegendEnter = mapLegend
+                .enter().append('g')
+                    .attr('class', 'mapLegend')
+                    .attr("transform", `translate(${margin.right-280},${margin.bottom+560})`)
+            mapLegendEnter.append('rect')
+                .attr("transform", `translate(-300,-10)`)
+                .attr('width', innerWidth+10)
+                .attr('height', 50)
+                .attr('fill', 'white');
+            mapLegendEnter.append('text')
+                .attr('dx', '-250')
+                .attr('dy', '20')
+                .text("% of population who are not White British:")
+            mapLegendEnter.call(legendLinear)
         });
 };
