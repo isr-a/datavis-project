@@ -39,7 +39,7 @@ export const map = (parent, props) => {
     const mapchild = mapEnter.merge(map).selectAll('.mapchild').data([null])
     const mapchildEnter = mapchild
         .enter().append('g')
-        .attr('transform', `translate(${margin.left-150},${margin.top})`)
+        .attr('transform', `translate(${margin.left-150},${margin.top+50})`)
             .attr('class', 'mapchild');
 
     // Initialise scales
@@ -53,15 +53,6 @@ export const map = (parent, props) => {
         .extent([[margin.left-150, margin.top],[margin.left+innerWidth, margin.top+innerHeight]])
         .translateExtent([[0, 0], [width, height]])
         .on('zoom', event => mapchildEnter.attr('transform', event.transform)));
-
-    function test(event, d) {
-        console.log("CALLING SETSELECTEDAREA")
-        setSelectedArea(event, d);
-        console.log("FINISHED CALLING SETSELECTEDAREA")
-        console.log(d)
-        console.log(selectedArea)
-        console.log((selectedArea==d));
-    }
 
     // Below contains all code that relies on the map data in some way
     d3.json(chosen_map)
@@ -77,5 +68,21 @@ export const map = (parent, props) => {
                 .attr('stroke-width', d => (selectedArea.properties.gcode==d.properties.gcode) ? '1px' : '0.1px')
                 .on('click', setSelectedArea);
             mapShape.exit().remove();
+
+
+            const mapSelect = mapEnter.merge(map).selectAll('.mapSelect').data([null])
+            const mapSelectEnter = mapSelect
+                .enter().append('g')
+                .attr('class', 'mapSelect')
+                .attr('x', margin.left)
+                .attr('y', margin.top)
+            mapSelectEnter.append('rect')
+                .attr('width', innerWidth)
+                .attr('height', 50)
+                .attr('fill', 'white');
+            mapSelectEnter.append('text')
+                .attr('dx', '100')
+                .attr('dy', '35')
+                .text("Select map type:")
         });
 };
