@@ -7,6 +7,7 @@ let data;
 let mapFile= './maps/ew_eer.geojson';
 let selectedArea = {properties: {gcode: "UnsetArea"}};
 let mapType = "Region";
+let mapYear = 2021
 let regionCodes = [
     'E12000001',
     'E12000002',
@@ -55,12 +56,23 @@ function mapDataFilter(mapType, year, data) {
 // Interactivity Functions
 function setSelectedMap() {
     var selectedOption = d3.select(this).property("value")
-    mapType = selectedOption
+    if (selectedOption == "Region21" || selectedOption == "Region11") {
+        mapType = "Region"
+    } else {
+        mapType = "Constituency"
+    }
+    if (selectedOption == "Region21" || selectedOption == "Constituency21") {
+        mapYear = 2021
+    } else {
+        mapYear = 2011
+    }
     updateVis()
 }
 
 const setSelectedArea = (event, d) => {
-    selectedArea = d
+    selectedArea.properties.gcode == d.properties.gcode
+        ? selectedArea = {properties: {gcode: "UnsetArea"}}
+        : selectedArea = d
     updateVis()
 }
 
@@ -68,7 +80,7 @@ const setSelectedArea = (event, d) => {
 const updateVis = () => {
     // Refresh Map
     svg.call(map, {
-        data: mapDataFilter(mapType, 2021, data),
+        data: mapDataFilter(mapType, mapYear, data),
         margin: { top: 0, bottom: 0, left: 0, right: 575 },
         chosen_map: mapFile,
         selectedArea: selectedArea,
