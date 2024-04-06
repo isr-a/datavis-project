@@ -23,14 +23,17 @@ export const sunburst = (parent, props) => {
     const sburstEnter = sburst
         .enter().append('g')
             .attr('class', 'sunburst')
-            .attr('transform', `translate(${margin.left},${margin.top+20})`)
+            .attr('transform', `translate(${margin.left+20},${margin.top+50})`)
 
     const chartTitle = sburstEnter.merge(sburst).selectAll('.chartTitle').data([null])
     const chartTitleEnter = chartTitle
         .enter().append('text')
+        .attr('class', console.log(`${data_2021.geography}:`))
         .attr('class', 'chartTitle')
         .attr('transform', `translate(0,20)`)
+    chartTitleEnter.merge(chartTitle)
         .text(`${data_2021.geography}:`)
+    chartTitle.exit().remove()
 
     const excludeText = sburstEnter.merge(sburst).selectAll('.excludeText').data([null])
     const excludeTextEnter = excludeText
@@ -104,28 +107,31 @@ export const sunburst = (parent, props) => {
         .attr('height', radius*2)
         .attr('fill', 'gray')
 
-    const chartLeft = chartEnter.merge(chart).selectAll('.chartLeft').data([null])
-    const chartLeftEnter = chartLeft
+    const chartLeftGroup = chartEnter.merge(chart).selectAll('.chartLeftGroup').data([null])
+    const chartLeftGroupEnter = chartLeftGroup
         .enter().append('g')
         .attr('transform', `translate(-5,0)`)
-        .attr('class', 'chartLeft')
+        .attr('class', 'chartLeftGroup')
     
-    chartLeftEnter.selectAll('path')
+    const chartLeft = chartLeftGroupEnter.merge(chartLeftGroup).selectAll('path')
         .data(root_2011.descendants())
-        .enter()
-        .append('path')
+    const chartLeftEnter = chartLeft    
+        .enter().append('path')
+    chartLeftEnter.merge(chartLeft)
         .attr("display", d => d.depth ? null : "none")
         .attr("d", arc_2011)
         .style('stroke', '#fff')
         .style("fill", d => colour((d.children ? d : d.parent).data.name));
 
-    chartLeftEnter.append('g')
+    const labelLeft = chartLeftGroupEnter.merge(chartLeftGroup).selectAll('.leftLabel')
+        .data(root_2011.descendants().filter(d => (d.y0 + d.y1) / 2 * (d.x1 - d.x0) > labelSize))
+    const labelLeftEnter = labelLeft
+        .join('text')
+        .attr('class', 'leftLabel')
         .attr("pointer-events", "none")
         .attr("text-anchor", "middle")
         .attr("font-size", labelSize)
-        .selectAll('text')
-        .data(root_2011.descendants().filter(d => (d.y0 + d.y1) / 2 * (d.x1 - d.x0) > labelSize))
-        .join('text')
+    labelLeftEnter.merge(labelLeft)
         .attr("transform", function(d) {
             const x = (d.x0 + d.x1) / 2 * 180 / Math.PI;
             const y = (d.y0 + d.y1) / 2;
@@ -134,47 +140,50 @@ export const sunburst = (parent, props) => {
         .attr("dy", "0.30em")
         .text(d => d.data.name);
 
-    chartLeftEnter.append('text')
+    chartLeftGroupEnter.append('text')
         .attr('class', 'yearText')
         .attr('dx', '-220')
         .attr('dy', '170')
         .text("2011")
-    chartLeft.exit().remove
+    chartLeftGroup.exit().remove
 
-    const chartRight = chartEnter.merge(chart).selectAll('.chartRight').data([null])
-    const chartRightEnter = chartRight
+    const chartRightGroup = chartEnter.merge(chart).selectAll('.chartRightGroup').data([null])
+    const chartRightGroupEnter = chartRightGroup
         .enter().append('g')
         .attr('transform', `translate(5,0)`)
-        .attr('class', 'chartRight')
+        .attr('class', 'chartRightGroup')
 
-    chartRightEnter.selectAll('path')
-        .data(root_2021.descendants())
-        .enter()
-        .append('path')
+    const chartRight = chartRightGroupEnter.merge(chartRightGroup).selectAll('path')
+            .data(root_2021.descendants())
+    const chartRightEnter = chartRight    
+        .enter().append('path')
+    chartRightEnter.merge(chartRight)
         .attr("display", d => d.depth ? null : "none")
         .attr("d", arc_2021)
         .style('stroke', '#fff')
         .style("fill", d => colour((d.children ? d : d.parent).data.name));
 
-    chartRightEnter.append('g')
+    const labelRight = chartRightGroupEnter.merge(chartRightGroup).selectAll('.rightLabel')
+        .data(root_2021.descendants().filter(d => (d.y0 + d.y1) / 2 * (d.x1 - d.x0) > labelSize))
+    const labelRightEnter = labelRight
+        .join('text')
+        .attr('class', 'rightLabel')
         .attr("pointer-events", "none")
         .attr("text-anchor", "middle")
         .attr("font-size", labelSize)
-        .selectAll('text')
-        .data(root_2021.descendants().filter(d => (d.y0 + d.y1) / 2 * (d.x1 - d.x0) > labelSize))
-        .join('text')
+    labelRightEnter.merge(labelRight)
         .attr("transform", function(d) {
             const x = (d.x0 + d.x1) / 2 * 180 / Math.PI;
             const y = (d.y0 + d.y1) / 2;
             return `rotate(${x - 90}) translate(${y},0) rotate(${x < 180 ? 0 : 180})`;
         })
-        .attr("dy", "0.35em")
+        .attr("dy", "0.30em")
         .text(d => d.data.name);
 
-    chartRightEnter.append('text')
+    chartRightGroupEnter.append('text')
         .attr('class', 'yearText')
         .attr('dx', '170')
         .attr('dy', '170')
         .text("2021")
-    chartRight.exit().remove()
+    chartRightGroup.exit().remove()
 };
