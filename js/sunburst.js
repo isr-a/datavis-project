@@ -9,25 +9,20 @@ export const sunburst = (parent, props) => {
     const height = +parent.attr('height');
     const innerWidth = width - margin.left - margin.right;
     const innerHeight = height - margin.top - margin.bottom;
+
     const radius = Math.min(width, height) / 3;
-    var color_2021 = d3.scaleOrdinal(d3.schemeCategory10.slice(0,5));
-    var color_2011 = d3.scaleOrdinal(d3.schemeCategory10.slice(0,5).reverse().slice(3,5).concat(d3.schemeCategory10.slice(0,5).reverse().slice(0,3)));
-
-
+    var colour = d3.scaleOrdinal(d3.schemeAccent.slice(0,5))
+        .domain(["White","Asian","Black","Mixed","Other"]);
     var data_2021 = data.filter(d => (d.date == 2021))[0]
     var data_2011 = data.filter(d => (d.date == 2011))[0]
+
+    console.log(data_2021)
 
     const sburst = parent.selectAll('.sunburst').data([null])
     const sburstEnter = sburst
         .enter().append('g')
             .attr('class', 'sunburst')
             .attr('transform', `translate(${margin.left},${margin.top+20})`)
-
-    //sburstEnter.merge(sburst).append('rect')
-    //    .attr('class', 'debug_rect')
-    //    .attr('width', innerWidth)
-    //    .attr('height', innerHeight)
-    //    .attr('fill', '#bbb');
 
     const chartTitle = sburstEnter.merge(sburst).selectAll('.chartTitle').data([null])
     const chartTitleEnter = chartTitle
@@ -36,12 +31,26 @@ export const sunburst = (parent, props) => {
         .attr('transform', `translate(0,20)`)
         .text(`${data_2021.geography}:`)
 
+    const legend = d3.legendColor()
+        .scale(colour)
+    const chartLegend = sburstEnter.merge(sburst).selectAll('.chartLegend').data([null])
+    const chartLegendEnter = chartLegend
+        .enter().append('g')
+        .attr('class', 'chartLegend')
+        .attr('transform', `scale(1.25) translate(400,100)`)
+    chartLegendEnter.append('text')
+        .attr('class', 'chartLegendText')
+        .attr('dx', '-20')
+        .attr('dy', '-15')
+        .text("Legend:")
+    chartLegendEnter.call(legend)
+
     var data_2021_no_WB = convertDataToHierarchy(data_2021, false)
     var data_2011_no_WB = convertDataToHierarchy(data_2011, false)
     data_2021 = convertDataToHierarchy(data_2021, true)
     data_2011 = convertDataToHierarchy(data_2011, true)
-    console.log(data_2021)
-    console.log(data_2021_no_WB)
+    //console.log(data_2021)
+    //console.log(data_2021_no_WB)
 
 
     const chart = sburstEnter.merge(sburst).selectAll('.chart').data([null])
@@ -63,7 +72,7 @@ export const sunburst = (parent, props) => {
         .sort((a, b) => a.value - b.value)
     partition(root_2011);
 
-    console.log(root_2021)
+    //console.log(root_2021)
 
     var arc_2011 = d3.arc()
         .startAngle(d => d.x0 + Math.PI)
@@ -100,7 +109,7 @@ export const sunburst = (parent, props) => {
         .attr("display", d => d.depth ? null : "none")
         .attr("d", arc_2011)
         .style('stroke', '#fff')
-        .style("fill", d => color_2011((d.children ? d : d.parent).data.name));
+        .style("fill", d => colour((d.children ? d : d.parent).data.name));
     chartLeft.exit().remove
 
     chartRightEnter.selectAll('path')
@@ -110,6 +119,6 @@ export const sunburst = (parent, props) => {
         .attr("display", d => d.depth ? null : "none")
         .attr("d", arc_2021)
         .style('stroke', '#fff')
-        .style("fill", d => color_2021((d.children ? d : d.parent).data.name));
+        .style("fill", d => colour((d.children ? d : d.parent).data.name));
     chartRight.exit().remove()
 };

@@ -47,7 +47,7 @@ export const map = (parent, props) => {
         .domain([0, 90])
         .range(["white","green"])
         
-    var legendLinear = d3.legendColor()
+    const legendLinear = d3.legendColor()
         .shapeWidth(30)
         .cells(10)
         .orient('horizontal')
