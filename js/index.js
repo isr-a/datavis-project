@@ -9,6 +9,7 @@ let mapFile= './maps/ew_eer.geojson';
 let selectedArea = {properties: {gcode: "UnsetArea"}};
 let mapType = "Region";
 let mapYear = 2021
+let excludeWB = false
 let regionCodes = [
     'E12000001',
     'E12000002',
@@ -23,7 +24,8 @@ let regionCodes = [
 ];
 
 // HTML Elements
-var mapSelector = d3.select("#mapSelectDropdown").on("input", setSelectedMap )
+var mapSelector = d3.select("#mapSelectDropdown").on("input", setSelectedMap)
+var wbSelector = d3.select("#excludeWB").on("input", setExcludeWB)
 
 
 // Helper Functions
@@ -79,6 +81,12 @@ function setSelectedMap() {
     updateVis()
 }
 
+function setExcludeWB() {
+    var selectedOption = d3.select(this).property("checked")
+    excludeWB = selectedOption
+    updateVis()
+}
+
 const setSelectedArea = (event, d) => {
     selectedArea.properties.gcode == d.properties.gcode
         ? selectedArea = {properties: {gcode: "UnsetArea"}}
@@ -102,6 +110,7 @@ const updateVis = () => {
         data: sunburstDataFilter(data),
         margin: { top: 0, bottom: 0, left: 650, right: 30 },
         convertDataToHierarchy: convertDataToHierarchy,
+        excludeWB: excludeWB,
     });
 };
 
