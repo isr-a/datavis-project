@@ -12,8 +12,10 @@ export const sunburst = (parent, props) => {
     const innerHeight = height - margin.top - margin.bottom;
 
     const radius = Math.min(width, height) / 3;
-    var colour = d3.scaleOrdinal(d3.schemeAccent.slice(0,5))
+    const labelSize = 9;
+    const colour = d3.scaleOrdinal(d3.schemeAccent.slice(0,5))
         .domain(["White","Asian","Black","Mixed","Other"]);
+
     const data_2021 = data.filter(d => (d.date == 2021))[0]
     const data_2011 = data.filter(d => (d.date == 2011))[0]
 
@@ -80,8 +82,6 @@ export const sunburst = (parent, props) => {
         .sort((a, b) => a.value - b.value)
     partition(root_2011);
 
-    //console.log(root_2021)
-
     var arc_2011 = d3.arc()
         .startAngle(d => d.x0 + Math.PI)
         .endAngle(d => d.x1 + Math.PI)
@@ -119,6 +119,21 @@ export const sunburst = (parent, props) => {
         .style('stroke', '#fff')
         .style("fill", d => colour((d.children ? d : d.parent).data.name));
 
+    chartLeftEnter.append('g')
+        .attr("pointer-events", "none")
+        .attr("text-anchor", "middle")
+        .attr("font-size", labelSize)
+        .selectAll('text')
+        .data(root_2011.descendants().filter(d => (d.y0 + d.y1) / 2 * (d.x1 - d.x0) > labelSize))
+        .join('text')
+        .attr("transform", function(d) {
+            const x = (d.x0 + d.x1) / 2 * 180 / Math.PI;
+            const y = (d.y0 + d.y1) / 2;
+            return `rotate(${x + 90}) translate(${y},0) rotate(${x > 180 ? 0 : 180})`;
+        })
+        .attr("dy", "0.30em")
+        .text(d => d.data.name);
+
     chartLeftEnter.append('text')
         .attr('class', 'yearText')
         .attr('dx', '-220')
@@ -140,6 +155,21 @@ export const sunburst = (parent, props) => {
         .attr("d", arc_2021)
         .style('stroke', '#fff')
         .style("fill", d => colour((d.children ? d : d.parent).data.name));
+
+    chartRightEnter.append('g')
+        .attr("pointer-events", "none")
+        .attr("text-anchor", "middle")
+        .attr("font-size", labelSize)
+        .selectAll('text')
+        .data(root_2021.descendants().filter(d => (d.y0 + d.y1) / 2 * (d.x1 - d.x0) > labelSize))
+        .join('text')
+        .attr("transform", function(d) {
+            const x = (d.x0 + d.x1) / 2 * 180 / Math.PI;
+            const y = (d.y0 + d.y1) / 2;
+            return `rotate(${x - 90}) translate(${y},0) rotate(${x < 180 ? 0 : 180})`;
+        })
+        .attr("dy", "0.35em")
+        .text(d => d.data.name);
 
     chartRightEnter.append('text')
         .attr('class', 'yearText')
