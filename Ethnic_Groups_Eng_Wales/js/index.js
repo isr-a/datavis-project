@@ -100,7 +100,7 @@ const updateVis = () => {
     // Refresh Sunburst
     svg.call(sunburst, {
         data: sunburstDataFilter(data),
-        margin: { top: 40, bottom: 40, left: 650, right: 30 },
+        margin: { top: 0, bottom: 0, left: 650, right: 30 },
         convertDataToHierarchy: convertDataToHierarchy,
     });
 };
