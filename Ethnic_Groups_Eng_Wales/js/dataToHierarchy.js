@@ -8,7 +8,7 @@ export const convertDataToHierarchy = (d, WB) => {
                 value: 0,
                 children: [
                     {
-                        name: 'English/Welsh/Scottish/Northern Irish/British',
+                        name: 'British',
                         value: WB ? d['White: English/Welsh/Scottish/Northern Irish/British'] : 0
                     },
                     {
@@ -82,11 +82,11 @@ export const convertDataToHierarchy = (d, WB) => {
                         value: d['Mixed/multiple ethnic groups: White and Asian']
                     },
                     {
-                        name: 'White and Black African',
+                        name: 'White and African',
                         value: d['Mixed/multiple ethnic groups: White and Black African']
                     },
                     {
-                        name: 'White and Black Caribbean',
+                        name: 'White and Caribbean',
                         value: d['Mixed/multiple ethnic groups: White and Black Caribbean']
                     },
                     {
@@ -104,7 +104,7 @@ export const convertDataToHierarchy = (d, WB) => {
                         value: d['Other ethnic group: Arab']
                     },
                     {
-                        name: 'Any other ethnic group',
+                        name: 'Other',
                         value: d['Other ethnic group: Any other ethnic group']
                     }
                 ]
