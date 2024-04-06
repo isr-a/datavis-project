@@ -3,6 +3,7 @@ export const sunburst = (parent, props) => {
         data,
         margin,
         convertDataToHierarchy,
+        excludeWB
     } = props;
 
     const width = +parent.attr('width');
@@ -13,10 +14,8 @@ export const sunburst = (parent, props) => {
     const radius = Math.min(width, height) / 3;
     var colour = d3.scaleOrdinal(d3.schemeAccent.slice(0,5))
         .domain(["White","Asian","Black","Mixed","Other"]);
-    var data_2021 = data.filter(d => (d.date == 2021))[0]
-    var data_2011 = data.filter(d => (d.date == 2011))[0]
-
-    console.log(data_2021)
+    const data_2021 = data.filter(d => (d.date == 2021))[0]
+    const data_2011 = data.filter(d => (d.date == 2011))[0]
 
     const sburst = parent.selectAll('.sunburst').data([null])
     const sburstEnter = sburst
@@ -30,6 +29,13 @@ export const sunburst = (parent, props) => {
         .attr('class', 'chartTitle')
         .attr('transform', `translate(0,20)`)
         .text(`${data_2021.geography}:`)
+
+    const excludeText = sburstEnter.merge(sburst).selectAll('.excludeText').data([null])
+    const excludeTextEnter = excludeText
+        .enter().append('text')
+        .attr('class', 'excludeText')
+        .attr('transform', `translate(0,500)`)
+        .text("Exclude White British?")
 
     const legend = d3.legendColor()
         .scale(colour)
@@ -45,13 +51,15 @@ export const sunburst = (parent, props) => {
         .text("Legend:")
     chartLegendEnter.call(legend)
 
-    var data_2021_no_WB = convertDataToHierarchy(data_2021, false)
-    var data_2011_no_WB = convertDataToHierarchy(data_2011, false)
-    data_2021 = convertDataToHierarchy(data_2021, true)
-    data_2011 = convertDataToHierarchy(data_2011, true)
-    //console.log(data_2021)
-    //console.log(data_2021_no_WB)
+    function chooseData(excludeWB) {
+        if (excludeWB) {
+            return [convertDataToHierarchy(data_2021, false), convertDataToHierarchy(data_2011, false)]
+        } else {
+            return [convertDataToHierarchy(data_2021, true), convertDataToHierarchy(data_2011, true)]
+        }
+    }
 
+    const [chosen2021, chosen2011] = chooseData(excludeWB)
 
     const chart = sburstEnter.merge(sburst).selectAll('.chart').data([null])
     const chartEnter = chart
@@ -62,12 +70,12 @@ export const sunburst = (parent, props) => {
     var partition = d3.partition()
         .size([Math.PI, radius]);
 
-    var root_2021 = d3.hierarchy(data_2021)
+    var root_2021 = d3.hierarchy(chosen2021)
         .sum(d => d.value)
         .sort((a, b) => b.value - a.value)
     partition(root_2021);
 
-    var root_2011 = d3.hierarchy(data_2011)
+    var root_2011 = d3.hierarchy(chosen2011)
         .sum(d => d.value)
         .sort((a, b) => a.value - b.value)
     partition(root_2011);

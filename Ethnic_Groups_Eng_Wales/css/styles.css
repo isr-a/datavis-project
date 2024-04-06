@@ -24,7 +24,7 @@ svg {
     font-size: 2.5rem;
 }
 
-.chartLegendText, .yearText {
+.chartLegendText, .yearText, .excludeText {
     font-size: 1.5rem;
 }
 
@@ -34,5 +34,14 @@ svg {
     left: 450px;
     width: 200px;
     height: 40px;
+    font-size: 1.5rem;
+}
+
+#excludeWB {
+    position: absolute;
+    top: 585px;
+    left: 935px;
+    width: 30px;
+    height: 30px;
     font-size: 1.5rem;
 }
