@@ -24,6 +24,10 @@ svg {
     font-size: 2.5rem;
 }
 
+.chartLegendText {
+    font-size: 1.5rem;
+}
+
 #mapSelectDropdown {
     position: absolute;
     top: 95px;
