@@ -10,7 +10,8 @@ export const sunburst = (parent, props) => {
     const innerWidth = width - margin.left - margin.right;
     const innerHeight = height - margin.top - margin.bottom;
     const radius = Math.min(width, height) / 2;
-    var color = d3.scaleOrdinal(d3.schemeCategory10);
+    var color_2021 = d3.scaleOrdinal(d3.schemeCategory10.slice(0,5));
+    var color_2011 = d3.scaleOrdinal(d3.schemeCategory10.slice(0,5).reverse().slice(3,5).concat(d3.schemeCategory10.slice(0,5).reverse().slice(0,3)));
     // d3.scaleOrdinal(d3.quantize(d3.interpolateRainbow, data.children.length + 1))
 
 
@@ -33,39 +34,73 @@ export const sunburst = (parent, props) => {
         .attr('class', 'debug_rect')
         .attr('width', innerWidth)
         .attr('height', innerHeight)
-        .attr('fill', 'red');
+        .attr('fill', '#bbb');
 
 
-    const chart = sburstenter.merge(sburst).selectAll('chart').data([null])
+    const chart = sburstenter.merge(sburst).selectAll('.chart').data([null])
     const chartEnter = chart
         .enter().append('g')
+        .attr('class', 'chart')
         .attr('transform', `translate(${innerWidth/2},${innerHeight/2})`)
     
     var partition = d3.partition()
-        .size([2 * Math.PI, radius]);
+        .size([Math.PI, radius]);
 
-    var root = d3.hierarchy(data_2021)
+    var root_2021 = d3.hierarchy(data_2021)
         .sum(d => d.value)
         .sort((a, b) => b.value - a.value)
+    partition(root_2021);
 
-    partition(root);
+    var root_2011 = d3.hierarchy(data_2011)
+        .sum(d => d.value)
+        .sort((a, b) => a.value - b.value)
+    partition(root_2011);
 
-    console.log(root)
+    console.log(root_2021)
 
-    var arc = d3.arc()
+    var arc_2011 = d3.arc()
+        .startAngle(d => d.x0 + Math.PI)
+        .endAngle(d => d.x1 + Math.PI)
+        .padAngle(d => Math.min((d.x1 - d.x0) / 2, 0.005))
+        .padRadius(radius / 2)
+        .innerRadius(d => d.y0)
+        .outerRadius(d => d.y1 - 1);
+
+    var arc_2021 = d3.arc()
         .startAngle(d => d.x0)
         .endAngle(d => d.x1)
         .padAngle(d => Math.min((d.x1 - d.x0) / 2, 0.005))
         .padRadius(radius / 2)
         .innerRadius(d => d.y0)
         .outerRadius(d => d.y1 - 1);
+
+    const chartLeft = chartEnter.merge(chart).selectAll('.chartLeft').data([null])
+    const chartLeftEnter = chartLeft
+        .enter().append('g')
+        .attr('transform', `translate(-5,0)`)
+        .attr('class', 'chartLeft')
+
+    const chartRight = chartEnter.merge(chart).selectAll('.chartRight').data([null])
+    const chartRightEnter = chartRight
+        .enter().append('g')
+        .attr('transform', `translate(5,0)`)
+        .attr('class', 'chartRight')
     
-    chartEnter.selectAll('path')
-        .data(root.descendants())
+    chartLeftEnter.selectAll('path')
+        .data(root_2011.descendants())
         .enter()
         .append('path')
         .attr("display", d => d.depth ? null : "none")
-        .attr("d", arc) //<path> attribute d: Expected number, "MNaN,NaNLNaN,NaNZ"
+        .attr("d", arc_2011)
         .style('stroke', '#fff')
-        .style("fill", d => color((d.children ? d : d.parent).data.name));
+        .style("fill", d => color_2011((d.children ? d : d.parent).data.name));
+
+    chartRightEnter.selectAll('path')
+        .data(root_2021.descendants())
+        .enter()
+        .append('path')
+        .attr("display", d => d.depth ? null : "none")
+        .attr("d", arc_2021)
+        .style('stroke', '#fff')
+        .style("fill", d => color_2021((d.children ? d : d.parent).data.name));
 };
