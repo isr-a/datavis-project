@@ -57,7 +57,7 @@ export const sunburst = (parent, props) => {
     const chartEnter = chart
         .enter().append('g')
         .attr('class', 'chart')
-        .attr('transform', `translate(${innerWidth/2 - 100},${innerHeight/2})`)
+        .attr('transform', `translate(${innerWidth/2 - 70},${innerHeight/2-50})`)
     
     var partition = d3.partition()
         .size([Math.PI, radius]);
@@ -90,17 +90,17 @@ export const sunburst = (parent, props) => {
         .innerRadius(d => d.y0)
         .outerRadius(d => d.y1 - 1);
 
+    chartEnter.append('rect')
+        .attr('transform', 'translate(-5,-200)')
+        .attr('width', '10')
+        .attr('height', radius*2)
+        .attr('fill', 'gray')
+
     const chartLeft = chartEnter.merge(chart).selectAll('.chartLeft').data([null])
     const chartLeftEnter = chartLeft
         .enter().append('g')
         .attr('transform', `translate(-5,0)`)
         .attr('class', 'chartLeft')
-
-    const chartRight = chartEnter.merge(chart).selectAll('.chartRight').data([null])
-    const chartRightEnter = chartRight
-        .enter().append('g')
-        .attr('transform', `translate(5,0)`)
-        .attr('class', 'chartRight')
     
     chartLeftEnter.selectAll('path')
         .data(root_2011.descendants())
@@ -110,7 +110,19 @@ export const sunburst = (parent, props) => {
         .attr("d", arc_2011)
         .style('stroke', '#fff')
         .style("fill", d => colour((d.children ? d : d.parent).data.name));
+
+    chartLeftEnter.append('text')
+        .attr('class', 'yearText')
+        .attr('dx', '-220')
+        .attr('dy', '170')
+        .text("2011")
     chartLeft.exit().remove
+
+    const chartRight = chartEnter.merge(chart).selectAll('.chartRight').data([null])
+    const chartRightEnter = chartRight
+        .enter().append('g')
+        .attr('transform', `translate(5,0)`)
+        .attr('class', 'chartRight')
 
     chartRightEnter.selectAll('path')
         .data(root_2021.descendants())
@@ -120,5 +132,11 @@ export const sunburst = (parent, props) => {
         .attr("d", arc_2021)
         .style('stroke', '#fff')
         .style("fill", d => colour((d.children ? d : d.parent).data.name));
+
+    chartRightEnter.append('text')
+        .attr('class', 'yearText')
+        .attr('dx', '170')
+        .attr('dy', '170')
+        .text("2021")
     chartRight.exit().remove()
 };
