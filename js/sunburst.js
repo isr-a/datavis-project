@@ -2,136 +2,70 @@ export const sunburst = (parent, props) => {
     const {
         data,
         margin,
+        convertDataToHierarchy,
     } = props;
 
     const width = +parent.attr('width');
     const height = +parent.attr('height');
     const innerWidth = width - margin.left - margin.right;
     const innerHeight = height - margin.top - margin.bottom;
+    const radius = Math.min(width, height) / 2;
+    var color = d3.scaleOrdinal(d3.schemeCategory10);
+    // d3.scaleOrdinal(d3.quantize(d3.interpolateRainbow, data.children.length + 1))
+
 
     var data_2021 = data.filter(d => (d.date == 2021))[0]
     var data_2011 = data.filter(d => (d.date == 2011))[0]
-
+    var data_2021_no_WB = convertDataToHierarchy(data_2021, false)
+    var data_2011_no_WB = convertDataToHierarchy(data_2011, false)
+    data_2021 = convertDataToHierarchy(data_2021, true)
+    data_2011 = convertDataToHierarchy(data_2011, true)
     console.log(data_2021)
+    console.log(data_2021_no_WB)
 
-    function convertDataToHierarchy(d) {
-        const newData = {
-            name:"Total", 
-            value: d.Total, 
-            children:[
-                {
-                    name: "White",
-                    value: d['White: Total'],
-                    children: [
-                        {
-                            name: 'English/Welsh/Scottish/Northern Irish/British',
-                            value: d['White: English/Welsh/Scottish/Northern Irish/British']
-                        },
-                        {
-                            name: 'Gypsy or Irish Traveller',
-                            value: d['White: Gypsy or Irish Traveller']
-                        },
-                        {
-                            name: 'Roma',
-                            value: d['White: Roma']
-                        },
-                        {
-                            name: 'Irish',
-                            value: d['White: Irish']
-                        },
-                        {
-                            name: 'Other White',
-                            value: d['White: Other White']
-                        }
-                    ]
-                },
-                {
-                    name: "Asian",
-                    value: d['Asian/Asian British: Total'],
-                    children: [
-                        {
-                            name: "Bangladeshi",
-                            value: d['Asian/Asian British: Bangladeshi']
-                        },
-                        {
-                            name: "Chinese",
-                            value: d['Asian/Asian British: Chinese']
-                        },
-                        {
-                            name: "Indian",
-                            value: d['Asian/Asian British: Indian']
-                        },
-                        {
-                            name: "Pakistani",
-                            value: d['Asian/Asian British: Pakistani']
-                        },
-                        {
-                            name: "Other Asian",
-                            value: d['Asian/Asian British: Other Asian']
-                        }
-                    ]
-                },
-                {
-                    name: "Black",
-                    value: d['Black/African/Caribbean/Black British: Total'],
-                    children: [
-                        {
-                            name: 'African',
-                            value: d['Black/African/Caribbean/Black British: African']
-                        },
-                        {
-                            name: 'Caribbean',
-                            value: d['Black/African/Caribbean/Black British: Caribbean']
-                        },
-                        {
-                            name: 'Other Black',
-                            value: d['Black/African/Caribbean/Black British: Other Black']
-                        }
-                    ]
-                },
-                {
-                    name: "Mixed",
-                    value: d['Mixed/multiple ethnic groups: Total'],
-                    children: [
-                        {
-                            name: 'White and Asian',
-                            value: d['Mixed/multiple ethnic groups: White and Asian']
-                        },
-                        {
-                            name: 'White and Black African',
-                            value: d['Mixed/multiple ethnic groups: White and Black African']
-                        },
-                        {
-                            name: 'White and Black Caribbean',
-                            value: d['Mixed/multiple ethnic groups: White and Black Caribbean']
-                        },
-                        {
-                            name: 'Other Mixed',
-                            value: d['Mixed/multiple ethnic groups: Other Mixed']
-                        }
-                    ]
-                },
-                {
-                    name: "Other",
-                    value: d['Other ethnic group: Total'],
-                    children: [
-                        {
-                            name: 'Arab',
-                            value: d['Other ethnic group: Arab']
-                        },
-                        {
-                            name: 'Any other ethnic group',
-                            value: d['Other ethnic group: Any other ethnic group']
-                        }
-                    ]
-                }
-            ]
-        }
-        return newData
-    }
+    const sburst = parent.selectAll('.sunburst').data([null])
+    const sburstenter = sburst
+        .enter().append('g')
+            .attr('class', 'sunburst')
+            .attr('transform', `translate(${margin.left},${margin.top})`)
 
-    data_2021 = convertDataToHierarchy(data_2021)
-    data_2011 = convertDataToHierarchy(data_2011)
+    sburstenter.merge(sburst).append('rect')
+        .attr('class', 'debug_rect')
+        .attr('width', innerWidth)
+        .attr('height', innerHeight)
+        .attr('fill', 'red');
 
-    console.log(data_2021)
+
+    const chart = sburstenter.merge(sburst).selectAll('chart').data([null])
+    const chartEnter = chart
+        .enter().append('g')
+        .attr('transform', `translate(${innerWidth/2},${innerHeight/2})`)
+    
+    var partition = d3.partition()
+        .size([2 * Math.PI, radius]);
+
+    var root = d3.hierarchy(data_2021)
+        .sum(d => d.value)
+        .sort((a, b) => b.value - a.value)
+
+    partition(root);
+
+    console.log(root)
+
+    var arc = d3.arc()
+        .startAngle(d => d.x0)
+        .endAngle(d => d.x1)
+        .padAngle(d => Math.min((d.x1 - d.x0) / 2, 0.005))
+        .padRadius(radius / 2)
+        .innerRadius(d => d.y0)
+        .outerRadius(d => d.y1 - 1);
+    
+    chartEnter.selectAll('path')
+        .data(root.descendants())
+        .enter()
+        .append('path')
+        .attr("display", d => d.depth ? null : "none")
+        .attr("d", arc) //<path> attribute d: Expected number, "MNaN,NaNLNaN,NaNZ"
+        .style('stroke', '#fff')
+        .style("fill", d => color((d.children ? d : d.parent).data.name));
 };
