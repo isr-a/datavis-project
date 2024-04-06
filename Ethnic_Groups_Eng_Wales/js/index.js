@@ -1,5 +1,6 @@
 import { sunburst }  from './sunburst.js';
 import { map }  from './map.js';
+import { convertDataToHierarchy } from './dataToHierarchy.js'
 const svg = d3.select('svg');
 
 // Global/state variables
@@ -99,7 +100,8 @@ const updateVis = () => {
     // Refresh Sunburst
     svg.call(sunburst, {
         data: sunburstDataFilter(data),
-        margin: { top: 40, bottom: 50, left: 700, right: 30 },
+        margin: { top: 40, bottom: 40, left: 650, right: 30 },
+        convertDataToHierarchy: convertDataToHierarchy,
     });
 };
 
