@@ -2,9 +2,9 @@ import { sunburst }  from './sunburst.js';
 import { map }  from './map.js';
 import { convertDataToHierarchy } from './dataToHierarchy.js'
 import { tooltip } from './tooltip.js'
-const svg = d3.select('svg');
 
 // Global/state variables
+const svg = d3.select('svg');
 let data;
 let mapFile= './maps/ew_eer.geojson';
 let selectedArea = {properties: {gcode: "UnsetArea"}};
@@ -29,7 +29,7 @@ var mapSelector = d3.select("#mapSelectDropdown").on("input", setSelectedMap)
 var wbSelector = d3.select("#excludeWB").on("input", setExcludeWB)
 
 
-// Helper Functions
+// Helper/Filter Functions
 function isInteger(value) {
     return /^\-?[0-9]+(e[0-9]+)?(\.[0-9]+)?$/.test(value);
 }
@@ -88,7 +88,7 @@ function setExcludeWB() {
     updateVis()
 }
 
-const setSelectedArea = (event, d) => {
+function setSelectedArea(event, d) {
     selectedArea.properties.gcode == d.properties.gcode
         ? selectedArea = {properties: {gcode: "UnsetArea"}}
         : selectedArea = d
