@@ -13,6 +13,7 @@ export const map = (parent, props) => {
     const innerWidth = width - margin.left - margin.right;
     const innerHeight = height - margin.top - margin.bottom;
 
+    // Tooltip Constants
     const toolTipObject = new tooltip(false)
     const mapToolTip = toolTipObject.Tooltip
     const toolTipText = (d) => {
@@ -29,7 +30,7 @@ export const map = (parent, props) => {
         .scale(5000)
     const pathGenerator = d3.geoPath().projection(projection);
 
-    // Group to enter our map elements and facilitate zoom
+    // SVG container for map - used to create a viewbox for the map when zoomed/panned
     const map = parent.selectAll('.mapSVG').data([null])
     const mapEnter = map
         .enter().append('svg')
@@ -46,13 +47,21 @@ export const map = (parent, props) => {
         .attr('width', innerWidth)
         .attr('height', innerHeight)
 
+    // Subgroup that contains zoom-effected elements (ensures panning works correctly while zoomed in)
     const mapchild = mapEnter.merge(map).selectAll('.mapchild').data([null])
     const mapchildEnter = mapchild
         .enter().append('g')
         .attr('transform', `translate(${margin.left-150},${margin.top+50})`)
             .attr('class', 'mapchild');
 
-    // Initialise scales
+    // d3-zoom 
+    mapEnter.call(d3.zoom()
+        .scaleExtent([1, 15])
+        .extent([[margin.left-150, margin.top],[margin.left+innerWidth, margin.top+innerHeight]])
+        .translateExtent([[0, 0], [width, height]])
+        .on('zoom', event => mapchildEnter.attr('transform', event.transform)));
+
+    // Initialise scales and Legend
     const nonWBScale = d3.scaleLinear()
         .domain([0, 90])
         .range(["white","green"])
@@ -63,16 +72,11 @@ export const map = (parent, props) => {
         .orient('horizontal')
         .scale(nonWBScale);
 
-    // d3-zoom 
-    mapEnter.call(d3.zoom()
-        .scaleExtent([1, 15])
-        .extent([[margin.left-150, margin.top],[margin.left+innerWidth, margin.top+innerHeight]])
-        .translateExtent([[0, 0], [width, height]])
-        .on('zoom', event => mapchildEnter.attr('transform', event.transform)));
-
-    // Below contains all code that relies on the map data in some way
+    // Below contains all code that relies on the map data in some way OR needs to be drawn on top of the map!
     d3.json(chosen_map)
         .then(mapdata => {
+
+            // Map generation itself
             const mapShape = mapchildEnter.merge(mapchild).selectAll('.country').data(mapdata.features)
             const mapShapeEnter = mapShape
                 .enter().append('path')
@@ -90,7 +94,7 @@ export const map = (parent, props) => {
                 .on("mouseleave", (e,d) => toolTipObject.mouseleave(e,d,mapToolTip))
             mapShape.exit().remove();
 
-
+            // Elements relating to the map selection dropdown
             const mapSelect = mapEnter.merge(map).selectAll('.mapSelect').data([null])
             const mapSelectEnter = mapSelect
                 .enter().append('g')
@@ -104,6 +108,7 @@ export const map = (parent, props) => {
                 .attr('class', 'mapSelectText')
                 .text("Select map type:")
 
+            // Elements relating to the map legend
             const mapLegend = mapEnter.merge(map).selectAll('.mapLegend').data([null])
             const mapLegendEnter = mapLegend
                 .enter().append('g')
