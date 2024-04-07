@@ -3,7 +3,8 @@ export const sunburst = (parent, props) => {
         data,
         margin,
         convertDataToHierarchy,
-        excludeWB
+        excludeWB,
+        tooltip
     } = props;
 
     const width = +parent.attr('width');
@@ -11,6 +12,8 @@ export const sunburst = (parent, props) => {
     const innerWidth = width - margin.left - margin.right;
     const innerHeight = height - margin.top - margin.bottom;
 
+    const toolTipObject = new tooltip(true)
+    const chartToolTip = toolTipObject.Tooltip
     const radius = Math.min(width, height) / 3;
     const labelSize = 9;
     const colour = d3.scaleOrdinal(d3.schemeAccent.slice(0,5))
@@ -27,6 +30,14 @@ export const sunburst = (parent, props) => {
 
     function numberWithCommas(x) {
         return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+    }
+
+    const toolTipText = (d) => {
+        return `
+        <div class="tooltipTitle">${d.data.name}</div> <br>
+        Population: ${numberWithCommas(d.value)} <br>
+        % of Total: ${getPercent(d)}%
+        `
     }
 
     const data_2021 = data.filter(d => (d.date == 2021))[0]
@@ -122,45 +133,6 @@ export const sunburst = (parent, props) => {
         .attr('height', radius*2)
         .attr('fill', 'gray')
 
-    var Tooltip = d3.select("body")
-        .append("div")
-        .style("opacity", 0)
-        .style("position", "absolute")
-        .attr("class", "tooltip")
-        .style("background-color", "white")
-        .style("border", "solid")
-        .style("border-width", "2px")
-        .style("border-radius", "5px")
-        .style("padding", "5px")
-
-    var mouseover = (e, d) => {
-        Tooltip
-            .style("opacity", 1)
-        d3.select(e.currentTarget)
-            .style("stroke", "black")
-            .style("opacity", 1)
-        }
-        var mousemove = (e, d) => {
-        Tooltip
-            .style('class', console.log(d))
-            .html(`
-            <div class="tooltipTitle">${d.data.name}</div> <br>
-            Population: ${numberWithCommas(d.value)} <br>
-            % of Total: ${getPercent(d)}%
-            `)
-            .style("left", `${e.pageX+15}px`)
-            .style("top", `${e.pageY}px`)
-        }
-        var mouseleave = (e, d) => {
-        Tooltip
-            .style("opacity", 0)
-        d3.select(e.currentTarget)
-            .style("stroke", "none")
-            .style("opacity", 0.8)
-            .style("left", `0px`)
-            .style("top", `0px`)
-        }
-
     const chartLeftGroup = chartEnter.merge(chart).selectAll('.chartLeftGroup').data([null])
     const chartLeftGroupEnter = chartLeftGroup
         .enter().append('g')
@@ -177,9 +149,9 @@ export const sunburst = (parent, props) => {
         .style('stroke', '#fff')
         .style("opacity", 0.8)
         .style("fill", d => colour((d.children ? d : d.parent).data.name))
-        .on("mouseover", mouseover)
-        .on("mousemove", mousemove)
-        .on("mouseleave", mouseleave)
+        .on("mouseover", (e,d) => toolTipObject.mouseover(e,d,chartToolTip))
+        .on("mousemove", (e,d) => toolTipObject.mousemove(e,d,toolTipText,chartToolTip))
+        .on("mouseleave", (e,d) => toolTipObject.mouseleave(e,d,chartToolTip))
 
     const labelLeft = chartLeftGroupEnter.merge(chartLeftGroup).selectAll('.leftLabel')
         .data(root_2011.descendants().filter(d => (d.y0 + d.y1) / 2 * (d.x1 - d.x0) > labelSize))
@@ -221,9 +193,9 @@ export const sunburst = (parent, props) => {
         .style('stroke', '#fff')
         .style("opacity", 0.8)
         .style("fill", d => colour((d.children ? d : d.parent).data.name))
-        .on("mouseover", mouseover)
-        .on("mousemove", mousemove)
-        .on("mouseleave", mouseleave)
+        .on("mouseover", (e,d) => toolTipObject.mouseover(e,d,chartToolTip))
+        .on("mousemove", (e,d) => toolTipObject.mousemove(e,d,toolTipText,chartToolTip))
+        .on("mouseleave", (e,d) => toolTipObject.mouseleave(e,d,chartToolTip))
 
     const labelRight = chartRightGroupEnter.merge(chartRightGroup).selectAll('.rightLabel')
         .data(root_2021.descendants().filter(d => (d.y0 + d.y1) / 2 * (d.x1 - d.x0) > labelSize))
