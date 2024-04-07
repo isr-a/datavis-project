@@ -4,13 +4,24 @@ export const map = (parent, props) => {
         margin,
         chosen_map,
         selectedArea,
-        setSelectedArea
+        setSelectedArea,
+        tooltip
     } = props;
 
     const width = +parent.attr('width');
     const height = +parent.attr('height');
     const innerWidth = width - margin.left - margin.right;
     const innerHeight = height - margin.top - margin.bottom;
+
+    const toolTipObject = new tooltip(false)
+    const mapToolTip = toolTipObject.Tooltip
+    const toolTipText = (d) => {
+        return `
+        <div class="tooltipTitle">${d.properties.geography}</div> <br>
+        Percent Non-White <br> 
+        British: ${data.filter(x => x['geography code'] == d.properties.gcode)[0]['Percent Non-WB']}%
+        `
+    }
 
     // Define Projection Constants
     const projection = d3.geoNaturalEarth1()
@@ -73,7 +84,10 @@ export const map = (parent, props) => {
                 .attr('d', pathGenerator)
                 .attr('fill', d => nonWBScale(data.filter(x => x['geography code'] == d.properties.gcode)[0]['Percent Non-WB']))
                 .attr('stroke-width', d => (selectedArea.properties.gcode==d.properties.gcode) ? '1px' : '0.1px')
-                .on('click', setSelectedArea);
+                .on('click', setSelectedArea)
+                .on("mouseover", (e,d) => toolTipObject.mouseover(e,d,mapToolTip))
+                .on("mousemove", (e,d) => toolTipObject.mousemove(e,d,toolTipText,mapToolTip))
+                .on("mouseleave", (e,d) => toolTipObject.mouseleave(e,d,mapToolTip))
             mapShape.exit().remove();
 
 

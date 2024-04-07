@@ -104,6 +104,7 @@ const updateVis = () => {
         chosen_map: mapFile,
         selectedArea: selectedArea,
         setSelectedArea: setSelectedArea,
+        tooltip: tooltip
     });
 
     // Refresh Sunburst
