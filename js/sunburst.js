@@ -34,7 +34,7 @@ export const sunburst = (parent, props) => {
 
     const toolTipText = (d) => {
         return `
-        <div class="tooltipTitle">${d.data.name}</div> <br>
+        <div class="tooltipTitle">${d.data.name}</div>
         Population: ${numberWithCommas(d.value)} <br>
         % of Total: ${getPercent(d)}%
         `
@@ -56,7 +56,6 @@ export const sunburst = (parent, props) => {
     const chartTitleEnter = chartTitle
         .enter().append('text')
         .attr('class', 'chartTitle')
-        .attr('transform', `translate(0,20)`)
     chartTitleEnter.merge(chartTitle)
         .text(`${data_2021.geography}:`)
     chartTitle.exit().remove()
@@ -65,7 +64,6 @@ export const sunburst = (parent, props) => {
     const excludeTextEnter = excludeText
         .enter().append('text')
         .attr('class', 'excludeText')
-        .attr('transform', `translate(0,500)`)
         .text("Exclude White British?")
 
     const legend = d3.legendColor()
@@ -74,11 +72,8 @@ export const sunburst = (parent, props) => {
     const chartLegendEnter = chartLegend
         .enter().append('g')
         .attr('class', 'chartLegend')
-        .attr('transform', `scale(1.25) translate(400,100)`)
     chartLegendEnter.append('text')
         .attr('class', 'chartLegendText')
-        .attr('dx', '-20')
-        .attr('dy', '-15')
         .text("Legend:")
     chartLegendEnter.call(legend)
 
@@ -128,27 +123,23 @@ export const sunburst = (parent, props) => {
         .outerRadius(d => d.y1 - 1);
 
     chartEnter.append('rect')
-        .attr('transform', 'translate(-5,-200)')
-        .attr('width', '10')
+        .attr('class', 'chartDivider')
         .attr('height', radius*2)
-        .attr('fill', 'gray')
 
     const chartLeftGroup = chartEnter.merge(chart).selectAll('.chartLeftGroup').data([null])
     const chartLeftGroupEnter = chartLeftGroup
         .enter().append('g')
-        .attr('transform', `translate(-5,0)`)
         .attr('class', 'chartLeftGroup')
     
     const chartLeft = chartLeftGroupEnter.merge(chartLeftGroup).selectAll('path')
         .data(root_2011.descendants())
-    const chartLeftEnter = chartLeft    
+    const chartLeftEnter = chartLeft
         .enter().append('path')
+        .attr('class', 'chartDiagram')
     chartLeftEnter.merge(chartLeft)
         .attr("display", d => d.depth ? null : "none")
         .attr("d", arc_2011)
-        .style('stroke', '#fff')
-        .style("opacity", 0.8)
-        .style("fill", d => colour((d.children ? d : d.parent).data.name))
+        .attr("fill", d => colour((d.children ? d : d.parent).data.name))
         .on("mouseover", (e,d) => toolTipObject.mouseover(e,d,chartToolTip))
         .on("mousemove", (e,d) => toolTipObject.mousemove(e,d,toolTipText,chartToolTip))
         .on("mouseleave", (e,d) => toolTipObject.mouseleave(e,d,chartToolTip))
@@ -158,8 +149,6 @@ export const sunburst = (parent, props) => {
     const labelLeftEnter = labelLeft
         .join('text')
         .attr('class', 'leftLabel')
-        .attr("pointer-events", "none")
-        .attr("text-anchor", "middle")
         .attr("font-size", labelSize)
     labelLeftEnter.merge(labelLeft)
         .attr("transform", function(d) {
@@ -171,28 +160,24 @@ export const sunburst = (parent, props) => {
         .text(d => d.data.name);
 
     chartLeftGroupEnter.append('text')
-        .attr('class', 'yearText')
-        .attr('dx', '-220')
-        .attr('dy', '170')
+        .attr('class', 'yearTextLeft')
         .text("2011")
     chartLeftGroup.exit().remove
 
     const chartRightGroup = chartEnter.merge(chart).selectAll('.chartRightGroup').data([null])
     const chartRightGroupEnter = chartRightGroup
         .enter().append('g')
-        .attr('transform', `translate(5,0)`)
         .attr('class', 'chartRightGroup')
 
     const chartRight = chartRightGroupEnter.merge(chartRightGroup).selectAll('path')
             .data(root_2021.descendants())
     const chartRightEnter = chartRight    
         .enter().append('path')
+        .attr('class', 'chartDiagram')
     chartRightEnter.merge(chartRight)
         .attr("display", d => d.depth ? null : "none")
         .attr("d", arc_2021)
-        .style('stroke', '#fff')
-        .style("opacity", 0.8)
-        .style("fill", d => colour((d.children ? d : d.parent).data.name))
+        .attr("fill", d => colour((d.children ? d : d.parent).data.name))
         .on("mouseover", (e,d) => toolTipObject.mouseover(e,d,chartToolTip))
         .on("mousemove", (e,d) => toolTipObject.mousemove(e,d,toolTipText,chartToolTip))
         .on("mouseleave", (e,d) => toolTipObject.mouseleave(e,d,chartToolTip))
@@ -202,8 +187,6 @@ export const sunburst = (parent, props) => {
     const labelRightEnter = labelRight
         .join('text')
         .attr('class', 'rightLabel')
-        .attr("pointer-events", "none")
-        .attr("text-anchor", "middle")
         .attr("font-size", labelSize)
     labelRightEnter.merge(labelRight)
         .attr("transform", function(d) {
@@ -215,9 +198,7 @@ export const sunburst = (parent, props) => {
         .text(d => d.data.name);
 
     chartRightGroupEnter.append('text')
-        .attr('class', 'yearText')
-        .attr('dx', '170')
-        .attr('dy', '170')
+        .attr('class', 'yearTextRight')
         .text("2021")
     chartRightGroup.exit().remove()
 };
