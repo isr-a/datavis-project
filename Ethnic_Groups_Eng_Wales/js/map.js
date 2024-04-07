@@ -17,7 +17,7 @@ export const map = (parent, props) => {
     const mapToolTip = toolTipObject.Tooltip
     const toolTipText = (d) => {
         return `
-        <div class="tooltipTitle">${d.properties.geography}</div> <br>
+        <div class="tooltipTitle">${d.properties.geography}</div>
         Percent Non-White <br> 
         British: ${data.filter(x => x['geography code'] == d.properties.gcode)[0]['Percent Non-WB']}%
         `
@@ -30,22 +30,21 @@ export const map = (parent, props) => {
     const pathGenerator = d3.geoPath().projection(projection);
 
     // Group to enter our map elements and facilitate zoom
-    const map = parent.selectAll('.map').data([null])
+    const map = parent.selectAll('.mapSVG').data([null])
     const mapEnter = map
         .enter().append('svg')
+        .attr('class', 'mapSVG')
         .attr("viewBox", [margin.left, margin.top, margin.left+innerWidth, margin.top+innerHeight])
         .attr("width", innerWidth)
         .attr("height", innerHeight)
-        .attr("style", "max-width: 100%; height: auto;")
-        .attr('class', 'map');
 
     // Bounding Box defined by margins
     mapEnter.append('rect')
+        .attr('class', 'mapBackground')
         .attr('x', margin.left)
         .attr('y', margin.top)
         .attr('width', innerWidth)
         .attr('height', innerHeight)
-        .attr('fill', '#69a3b2');
 
     const mapchild = mapEnter.merge(map).selectAll('.mapchild').data([null])
     const mapchildEnter = mapchild
@@ -74,11 +73,9 @@ export const map = (parent, props) => {
     // Below contains all code that relies on the map data in some way
     d3.json(chosen_map)
         .then(mapdata => {
-
             const mapShape = mapchildEnter.merge(mapchild).selectAll('.country').data(mapdata.features)
             const mapShapeEnter = mapShape
                 .enter().append('path')
-                    .attr('stroke', 'black')
                     .attr('class','country')
             mapShapeEnter.merge(mapShape)
                 .attr('d', pathGenerator)
@@ -91,7 +88,6 @@ export const map = (parent, props) => {
                 .on("mouseover", (e,d) => toolTipObject.mouseover(e,d,mapToolTip))
                 .on("mousemove", (e,d) => toolTipObject.mousemove(e,d,toolTipText,mapToolTip))
                 .on("mouseleave", (e,d) => toolTipObject.mouseleave(e,d,mapToolTip))
-            mapToolTip.exit().remove()
             mapShape.exit().remove();
 
 
@@ -102,12 +98,10 @@ export const map = (parent, props) => {
                 .attr('x', margin.left)
                 .attr('y', margin.top)
             mapSelectEnter.append('rect')
+                .attr('class', 'mapSelectBackground')
                 .attr('width', innerWidth)
-                .attr('height', 50)
-                .attr('fill', 'white');
             mapSelectEnter.append('text')
-                .attr('dx', '100')
-                .attr('dy', '35')
+                .attr('class', 'mapSelectText')
                 .text("Select map type:")
 
             const mapLegend = mapEnter.merge(map).selectAll('.mapLegend').data([null])
@@ -116,13 +110,10 @@ export const map = (parent, props) => {
                     .attr('class', 'mapLegend')
                     .attr("transform", `translate(${margin.right-380},${margin.bottom+560})`)
             mapLegendEnter.append('rect')
-                .attr("transform", `translate(-300,-10)`)
+                .attr('class', 'mapLegendBackground')
                 .attr('width', innerWidth+10)
-                .attr('height', 50)
-                .attr('fill', 'white');
             mapLegendEnter.append('text')
-                .attr('dx', '-250')
-                .attr('dy', '20')
+                .attr('class', 'mapLegendText')
                 .text("% of population who are not White British:")
             mapLegendEnter.call(legendLinear)
         });
