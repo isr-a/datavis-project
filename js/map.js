@@ -84,10 +84,14 @@ export const map = (parent, props) => {
                 .attr('d', pathGenerator)
                 .attr('fill', d => nonWBScale(data.filter(x => x['geography code'] == d.properties.gcode)[0]['Percent Non-WB']))
                 .attr('stroke-width', d => (selectedArea.properties.gcode==d.properties.gcode) ? '1px' : '0.1px')
-                .on('click', setSelectedArea)
+                .on('click', (e,d) => {
+                    toolTipObject.mouseleave(e,d,mapToolTip)
+                    setSelectedArea(e,d)
+                })
                 .on("mouseover", (e,d) => toolTipObject.mouseover(e,d,mapToolTip))
                 .on("mousemove", (e,d) => toolTipObject.mousemove(e,d,toolTipText,mapToolTip))
                 .on("mouseleave", (e,d) => toolTipObject.mouseleave(e,d,mapToolTip))
+            mapToolTip.exit().remove()
             mapShape.exit().remove();
 
 
