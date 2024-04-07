@@ -1,6 +1,7 @@
 import { sunburst }  from './sunburst.js';
 import { map }  from './map.js';
 import { convertDataToHierarchy } from './dataToHierarchy.js'
+import { tooltip } from './tooltip.js'
 const svg = d3.select('svg');
 
 // Global/state variables
@@ -111,6 +112,7 @@ const updateVis = () => {
         margin: { top: 0, bottom: 0, left: 650, right: 30 },
         convertDataToHierarchy: convertDataToHierarchy,
         excludeWB: excludeWB,
+        tooltip: tooltip
     });
 };
 
