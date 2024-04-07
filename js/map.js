@@ -19,8 +19,8 @@ export const map = (parent, props) => {
     const toolTipText = (d) => {
         return `
         <div class="tooltipTitle">${d.properties.geography}</div>
-        Percent Non-White <br> 
-        British: ${data.filter(x => x['geography code'] == d.properties.gcode)[0]['Percent Non-WB']}%
+        % Non-White British: <br> 
+        ${data.filter(x => x['geography code'] == d.properties.gcode)[0]['Percent Non-WB']}%
         `
     }
 

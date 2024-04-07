@@ -11,6 +11,7 @@ export class tooltip {
         // Interactivity Functions
         this.mouseover = (e, d, Tooltip) => {
             Tooltip.merge(tooltipInit)
+                .style("display", "block")
                 .style("opacity", 1)
             d3.select(e.currentTarget)
                 .style("opacity", 1)
@@ -24,7 +25,8 @@ export class tooltip {
         }
         this.mouseleave = (e, d, Tooltip) => {
             Tooltip.merge(tooltipInit)
-                .style("opacity", 0)
+                .style('opacity', 0)
+                .style('display','none')
             d3.select(e.currentTarget)
                 .style("opacity", opacityToggle ? 0.8 : 1)
                 .style("left", `0px`)
