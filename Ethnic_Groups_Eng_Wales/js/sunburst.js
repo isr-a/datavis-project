@@ -15,7 +15,7 @@ export const sunburst = (parent, props) => {
     // Chart Constants
     const radius = Math.min(width, height) / 3;
     const labelSize = 9;
-    const colour = d3.scaleOrdinal(d3.schemeAccent.slice(0,5))
+    const colour = d3.scaleOrdinal(d3.schemeSet2.slice(0,5))
         .domain(["White","Asian","Black","Mixed","Other"]);
 
     // Helper Functions
